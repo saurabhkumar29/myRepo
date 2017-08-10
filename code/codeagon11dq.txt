@@ -1,0 +1,209 @@
+import java.io.*;
+import java.util.*;
+
+public class CodeAgonqD {
+
+  static int n, m;
+  static ArrayList<Integer> g[], rev[];
+  static boolean c[];
+  static boolean v[];
+  static int N;
+  static int ind[];
+
+  public static void main(String[] args) {
+    InputReader in = new InputReader(System.in);
+    PrintWriter w = new PrintWriter(System.out);
+
+    int t = in.nextInt();
+
+    while (t-- > 0) {
+
+      n = in.nextInt();
+      m = in.nextInt();
+
+      g = new ArrayList[n + 1];
+      rev = new ArrayList[n + 1];
+      for (int i = 1; i <= n; i++) {
+        g[i] = new ArrayList<Integer>();
+        rev[i] = new ArrayList<>();
+      }
+
+      for (int i = 1; i <= n; i++) {
+        int d = in.nextInt();
+        for (int j = 0; j < d; j++) {
+          int k = in.nextInt();
+          g[i].add(k);
+          rev[k].add(i);
+        }
+      }
+
+      c = new boolean[n + 1];
+      while (m-- > 0)
+        c[in.nextInt()] = true;
+
+      v = new boolean[n + 1];
+      N = 0;
+      for (int i = 1; i <= n; i++) {
+        if (c[i])
+          dfs(i);
+      }
+      
+      w.println(N);
+      
+      ind = new int[n + 1];
+      
+      for (int i = 1; i <= n; i++) {
+        if (v[i]) {
+          for (int j : g[i]) {
+            if (v[j]) {
+              ind[i]++;
+            }
+          }
+        }
+      }
+      
+      TreeSet<Integer> set = new TreeSet<>();
+    
+      for (int i = 1; i <= n; i++) {
+        if (v[i] && ind[i] == 0) {
+          set.add(i);
+        }
+      }
+      
+      while (!set.isEmpty()) {
+        int min = set.first();
+        set.remove(min);
+        w.print(min + " ");
+        for (int j : rev[min]) {
+          if (v[j]) {
+            ind[j]--;
+            if (ind[j] == 0) {
+              set.add(j);
+            }
+          }
+        }
+      }
+      
+      w.println();
+    }
+
+    w.close();
+  }
+  
+  static void dfs(int x) {
+    if (v[x])
+      return;
+    N++;
+    v[x] = true;
+    for (int next : g[x])
+      dfs(next);
+  }
+
+  static class InputReader {
+
+    private final InputStream stream;
+    private final byte[] buf = new byte[8192];
+    private int curChar, snumChars;
+
+    public InputReader(InputStream st) {
+      this.stream = st;
+    }
+
+    public int read() {
+      if (snumChars == -1)
+        throw new InputMismatchException();
+      if (curChar >= snumChars) {
+        curChar = 0;
+        try {
+          snumChars = stream.read(buf);
+        } catch (IOException e) {
+          throw new InputMismatchException();
+        }
+        if (snumChars <= 0)
+          return -1;
+      }
+      return buf[curChar++];
+    }
+
+    public int nextInt() {
+      int c = read();
+      while (isSpaceChar(c)) {
+        c = read();
+      }
+      int sgn = 1;
+      if (c == '-') {
+        sgn = -1;
+        c = read();
+      }
+      int res = 0;
+      do {
+        res *= 10;
+        res += c - '0';
+        c = read();
+      } while (!isSpaceChar(c));
+      return res * sgn;
+    }
+
+    public long nextLong() {
+      int c = read();
+      while (isSpaceChar(c)) {
+        c = read();
+      }
+      int sgn = 1;
+      if (c == '-') {
+        sgn = -1;
+        c = read();
+      }
+      long res = 0;
+      do {
+        res *= 10;
+        res += c - '0';
+        c = read();
+      } while (!isSpaceChar(c));
+      return res * sgn;
+    }
+
+    public int[] nextIntArray(int n) {
+      int a[] = new int[n];
+      for (int i = 0; i < n; i++) {
+        a[i] = nextInt();
+      }
+      return a;
+    }
+
+    public String readString() {
+      int c = read();
+      while (isSpaceChar(c)) {
+        c = read();
+      }
+      StringBuilder res = new StringBuilder();
+      do {
+        res.appendCodePoint(c);
+        c = read();
+      } while (!isSpaceChar(c));
+      return res.toString();
+    }
+
+    public String nextLine() {
+      int c = read();
+      while (isSpaceChar(c))
+        c = read();
+      StringBuilder res = new StringBuilder();
+      do {
+        res.appendCodePoint(c);
+        c = read();
+      } while (!isEndOfLine(c));
+      return res.toString();
+    }
+
+    public boolean isSpaceChar(int c) {
+      return c == ' ' || c == '\n' || c == '\r' || c == '\t' || c == -1;
+    }
+
+    private boolean isEndOfLine(int c) {
+      return c == '\n' || c == '\r' || c == -1;
+    }
+
+  }
+
+}
